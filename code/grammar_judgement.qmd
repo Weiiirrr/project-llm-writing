@@ -1,0 +1,179 @@
+```{r}
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(mirt)
+library(stringr)
+# library(GA)
+```
+
+# Data of Grammar Judgment Task 
+```{r}
+# Load the data
+data <- read.csv("~/Documents/Project/project-llm-writing/data/grammar/grammar_full.csv")
+hist(data$elogit)
+# unique(data$Eng_little)
+
+data_lr <- data %>% filter(Eng_little == "lot" | Eng_little == "little") %>% filter(Eng_country_yrs <= 2) ##try to pair our population, arrives in English-speaking country for less than 2 years
+
+# hist(data_lr$Eng_country_yrs)
+# hist(data_lr$elogit)
+data_irt <- data_lr %>% select(grep("^q", names(data)))
+itm_dict <- colnames(data_irt)[c(1:6,77:ncol(data_irt))]
+itm_poly <- colnames(data_irt)[11:76]
+data_dict <- data_irt[, itm_dict]
+data_poly <- data_irt[, itm_poly]
+```
+
+The grammar judgment task is to test participants' grammar ability. The task is to decide whether the presented sentence is grammatically correct or not. The dataset contains the responses of participants to the grammar judgment task. The dataset used in this analysis is a publically available dataset(https://osf.io/vab8j/). n = `r length(data_lr[,1])`. 
+
+The tasks contains 35 questions, including picture matching, 4-option alternative forced choice, and choose all applies.
+
+```{r}
+acc <- data.frame(matrix(ncol = 1, nrow = ncol(data_irt)))
+for (i in 1:ncol(data_irt)) {
+    acc[i,] <- sum(data_irt[,i])/nrow(data_irt)
+}
+colnames(acc) <- "accuracy"
+rownames(acc) <- colnames(data_irt)
+hist(acc$accuracy)
+```
+
+# IRT model fitting
+## Option as item
+
+```{r}
+##fit the 2PL model, 500 iterations, not converge
+##fit the 3PL model, 500 iterations, not converge
+##fit the 2PL model, 1000 iterations, not converge
+# fit <- mirt(data_irt, 1, itemtype = "2PL", SE=FALSE, technical=list(NCYCLES=1000))
+# saveRDS(fit, paste("irt_full", '2PL', ".Rds", sep=""))
+fit <- readRDS("~/Documents/Project/project-llm-writing/data/grammar/irt_full2PL.Rds")
+item_params <- coef(fit, IRTpars = TRUE, simplify = TRUE)$items
+hist(item_params[,'b'])
+plot(fit, type = 'trace', items = 1) #extreme value of the item difficulty
+cor(item_params[,'b'], acc[names(item_params[,'b']),]) 
+cor(item_params[,'b'], acc[names(item_params[,'b']),]) 
+##plot the correlation between the item choice and elogit
+data = cbind(item_params[,'b'], acc[names(item_params[,'b']),]) 
+colnames(data) <- c("diff", "accuracy")
+ggplot(data = data %>% as.data.frame() %>% filter(diff > -10 & diff < 10), aes(x = diff, y = accuracy)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE)
+## note: after fitting 2pl:
+### item 'q14_3', 'q33_5', 'q28_2' are very different than the other items
+```
+
+In Hartshorne /& Chen (2021), they treated every option in the questions as a separate item. There maybe two issues: (1). the items are not independent, (2). the distribution of item difficulty is not balanced left-skewed, leading to poor model fitting (When the item difficulty distribution does not align with the ability distribution, the assumptions of the IRT model—such as monotonicity or local independence—may not hold well. Example: If high-ability participants encounter only easy items, their responses may show high variability due to guessing or lapses in attention, violating the assumption that higher ability should predict higher probabilities of correct responses), particularly when I fitting the 2PL model. 
+
+Our binary modeling shows that most items are “super easy” (negative difficulty), switching to partial credit model(PCM) is a good option. PCM aggregates responses into a single polytomous item, allowing us to capture meaningful variability across participants even when individual items are easy.
+
+## Question as itme
+Divide the items into two groups: dictionary (q1-7) and polysemy items(q9-35). Four-Alternative Forced Choice (4AFC) is not included in the analysis. Because partial credit model is suitable for the data. 
+
+```{r}
+#construct the polysemy items
+#get question list
+q_list <- str_extract(colnames(data_poly), "(?<=q)\\d+(?=_)")
+#create a dataframe with columns as the number of questions
+data_poly_q <- data.frame(matrix(ncol = 0, nrow = nrow(data_irt)))
+for (q in unique(q_list)){
+    data_poly_q[paste0("q", q)] <- data_poly %>% select(grep(paste0("^q", q), names(data_poly))) %>% rowSums()
+}
+
+# Combine dichotomous and polytomous data
+data_joint <- cbind(data_dict, data_poly_q)
+# Specify item types for each part
+item_types <- c(rep("2PL", ncol(data_dict)), rep("gpcm", ncol(data_poly_q)))
+
+# Fit the model
+# joint_fit <- mirt(data_joint, model = 1, itemtype = item_types, optimizer = "nlminb")
+# saveRDS(joint_fit, paste("irt_full", 'joint', ".Rds", sep=""))
+joint_fit <- readRDS("~/Documents/Project/project-llm-writing/data/grammar/irt_fulljoint.Rds")
+
+item_joint <- coef(joint_fit, IRTpars = TRUE, simplify = TRUE)$items
+item_joint[,'b'] <- rowMeans(item_joint[, c('b', 'b1', 'b2', 'b3', 'b4')], na.rm = TRUE)
+
+item_joint_parames <- item_joint[, c('a', 'b')] 
+
+# write.csv(item_joint, "~/Documents/Project/project-aiwriting/data/irt_res_item_joint.csv")
+
+for (q in unique(q_list)){
+    acc[paste0("q", q), ] <- acc[grep(paste0("^q", q), rownames(acc)), ] %>% mean()
+}
+
+# Join item parameters with accuracy by rownames of item_params
+
+items <- merge(item_joint_parames, acc, by = "row.names")
+# write.csv(items, "~/Documents/Project/project-llm-writing/data/grammar/irt2_res_items.csv")
+
+# Plot correlation between difficulty and accuracy
+ggplot(items, aes(x = b, y = accuracy)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Item Difficulty vs. Accuracy", x = "Difficulty", y = "Accuracy")
+
+cor(items$b, items$accuracy)
+cor.test(items$b, items$accuracy)
+
+hist(items$b[items$b>-7 & items$b<10])
+# Extract ability estimates
+# ability_estimates <- fscores(joint_model)
+# print(ability_estimates)
+
+plot(joint_fit, type = 'trace', items = 1)
+```
+
+Based on the item estimations from the joint models and item's accuracy, they were divided into two parts by hand pick. 
+
+```{r}
+#based on item parameters, hand pick the items
+ver1_q <- c("q7","q1","q2",
+            "q35_2","q32_6","q34_3","q35_1","q35_5","q33_7","q32_8","q35_8","q34_6",
+            "q12","q21","q23","q30","q31","q19","q20","q11","q27","q15")
+ver2_q <- c("q6", "q5", "q3", 
+            "q34_4", "q34_8", "q34_2", "q35_7", "q33_4", "q33_6", "q35_4", "q32_5", "q34_1", 
+            "q13", "q25", "q14", "q26", "q22", "q16", "q17", "q18", "q24", "q29")
+```
+
+
+### Validation the parallel tests
+```{r}
+data_a <- data_joint[, ver1_q]
+data_b <- data_joint[, ver2_q]
+
+item_types_p <- c(rep("2PL", 12), rep("gpcm", 10))
+
+model_a <- mirt(data_a, 1, itemtype = item_types_p, SE=TRUE)
+ability_a <- fscores(model_a)
+params_a <- coef(model_a, IRTpars = TRUE, simplify = TRUE)$items
+params_a[,'b'] <- rowMeans(params_a[, c('b', 'b1', 'b2', 'b3', 'b4')], na.rm = TRUE)
+
+model_b <- mirt(data_b, 1, itemtype = item_types_p, SE=TRUE)
+ability_b <- fscores(model_b)
+params_b <- coef(model_b, IRTpars = TRUE, simplify = TRUE)$items
+params_b[,'b'] <- rowMeans(params_b[, c('b', 'b1', 'b2', 'b3', 'b4')], na.rm = TRUE)
+
+# cor(ability_a, ability_b)
+# ggplot() +
+#   geom_point(aes(x = ability_a, y = ability_b)) +
+#   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+#   labs(title = "Ability Estimates from Version A and Version B",
+#        x = "Ability Estimates from Version A",
+#        y = "Ability Estimates from Version B")
+
+hist(ability_a-ability_b, main = "Difference between the individual ability of version A and version B, IRT mdoels")
+
+acc_a <- rowSums(data_a)/44
+acc_b <- rowSums(data_b)/44
+hist(acc_a-acc_b, main = "Difference between the individual accuracy of version A and version B")
+
+# ggplot() +
+#   geom_point(aes(x = acc_a, y = acc_b)) +
+#   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+#   labs(title = "Ability Estimates from Version A and Version B",
+#        x = "Ability Estimates from Version A",
+#        y = "Ability Estimates from Version B")
+```
+
+the correlation between participants abilities from version a and version b is `r cor(ability_a, ability_b)`. The correlation is significant, `r cor.test(ability_a, ability_b)$p.value`. The histogram of the difference between the ability estimates from version A and version B is shown above. The histogram of the difference between the individual's accuracy from version A and version B is shown above. The differences between the ability estimates and the accuracy of version A and version B are symmetrically distributed around 0, indicating that the two versions are parallel.

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.554">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>grammar_judgement</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="grammar_judgement_files/libs/clipboard/clipboard.min.js"></script>
+<script src="grammar_judgement_files/libs/quarto-html/quarto.js"></script>
+<script src="grammar_judgement_files/libs/quarto-html/popper.min.js"></script>
+<script src="grammar_judgement_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="grammar_judgement_files/libs/quarto-html/anchor.min.js"></script>
+<link href="grammar_judgement_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="grammar_judgement_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="grammar_judgement_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="grammar_judgement_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="grammar_judgement_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: stats4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># library(GA)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="data-of-grammar-judgment-task" class="level1">
+<h1>Data of Grammar Judgment Task</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the data</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"~/Documents/Project/project-llm-writing/data/grammar/grammar_full.csv"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(data<span class="sc">$</span>elogit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># unique(data$Eng_little)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>data_lr <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Eng_little <span class="sc">==</span> <span class="st">"lot"</span> <span class="sc">|</span> Eng_little <span class="sc">==</span> <span class="st">"little"</span>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Eng_country_yrs <span class="sc">&lt;=</span> <span class="dv">2</span>) <span class="do">##try to pair our population, arrives in English-speaking country for less than 2 years</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># hist(data_lr$Eng_country_yrs)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># hist(data_lr$elogit)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>data_irt <span class="ot">&lt;-</span> data_lr <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">grep</span>(<span class="st">"^q"</span>, <span class="fu">names</span>(data)))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>itm_dict <span class="ot">&lt;-</span> <span class="fu">colnames</span>(data_irt)[<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="dv">77</span><span class="sc">:</span><span class="fu">ncol</span>(data_irt))]</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>itm_poly <span class="ot">&lt;-</span> <span class="fu">colnames</span>(data_irt)[<span class="dv">11</span><span class="sc">:</span><span class="dv">76</span>]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>data_dict <span class="ot">&lt;-</span> data_irt[, itm_dict]</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>data_poly <span class="ot">&lt;-</span> data_irt[, itm_poly]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The grammar judgment task is to test participants’ grammar ability. The task is to decide whether the presented sentence is grammatically correct or not. The dataset contains the responses of participants to the grammar judgment task. The dataset used in this analysis is a publically available dataset(https://osf.io/vab8j/). n = 565458.</p>
+<p>The tasks contains 35 questions, including picture matching, 4-option alternative forced choice, and choose all applies.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>acc <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">nrow =</span> <span class="fu">ncol</span>(data_irt)))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(data_irt)) {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    acc[i,] <span class="ot">&lt;-</span> <span class="fu">sum</span>(data_irt[,i])<span class="sc">/</span><span class="fu">nrow</span>(data_irt)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(acc) <span class="ot">&lt;-</span> <span class="st">"accuracy"</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(acc) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(data_irt)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(acc<span class="sc">$</span>accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="irt-model-fitting" class="level1">
+<h1>IRT model fitting</h1>
+<section id="option-as-item" class="level2">
+<h2 class="anchored" data-anchor-id="option-as-item">Option as item</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">##fit the 2PL model, 500 iterations, not converge</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="do">##fit the 3PL model, 500 iterations, not converge</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">##fit the 2PL model, 1000 iterations, not converge</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># fit &lt;- mirt(data_irt, 1, itemtype = "2PL", SE=FALSE, technical=list(NCYCLES=1000))</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(fit, paste("irt_full", '2PL', ".Rds", sep=""))</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Documents/Project/project-llm-writing/data/grammar/irt_full2PL.Rds"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>item_params <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit, <span class="at">IRTpars =</span> <span class="cn">TRUE</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>items</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(item_params[,<span class="st">'b'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit, <span class="at">type =</span> <span class="st">'trace'</span>, <span class="at">items =</span> <span class="dv">1</span>) <span class="co">#extreme value of the item difficulty</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(item_params[,<span class="st">'b'</span>], acc[<span class="fu">names</span>(item_params[,<span class="st">'b'</span>]),]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.135216</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(item_params[,<span class="st">'b'</span>], acc[<span class="fu">names</span>(item_params[,<span class="st">'b'</span>]),]) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.135216</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">##plot the correlation between the item choice and elogit</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">cbind</span>(item_params[,<span class="st">'b'</span>], acc[<span class="fu">names</span>(item_params[,<span class="st">'b'</span>]),]) </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diff"</span>, <span class="st">"accuracy"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> data <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">filter</span>(diff <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">10</span> <span class="sc">&amp;</span> diff <span class="sc">&lt;</span> <span class="dv">10</span>), <span class="fu">aes</span>(<span class="at">x =</span> diff, <span class="at">y =</span> accuracy)) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">## note: after fitting 2pl:</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="do">### item 'q14_3', 'q33_5', 'q28_2' are very different than the other items</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In Hartshorne /&amp; Chen (2021), they treated every option in the questions as a separate item. There maybe two issues: (1). the items are not independent, (2). the distribution of item difficulty is not balanced left-skewed, leading to poor model fitting (When the item difficulty distribution does not align with the ability distribution, the assumptions of the IRT model—such as monotonicity or local independence—may not hold well. Example: If high-ability participants encounter only easy items, their responses may show high variability due to guessing or lapses in attention, violating the assumption that higher ability should predict higher probabilities of correct responses), particularly when I fitting the 2PL model.</p>
+<p>Our binary modeling shows that most items are “super easy” (negative difficulty), switching to partial credit model(PCM) is a good option. PCM aggregates responses into a single polytomous item, allowing us to capture meaningful variability across participants even when individual items are easy.</p>
+</section>
+<section id="question-as-itme" class="level2">
+<h2 class="anchored" data-anchor-id="question-as-itme">Question as itme</h2>
+<p>Divide the items into two groups: dictionary (q1-7) and polysemy items(q9-35). Four-Alternative Forced Choice (4AFC) is not included in the analysis. Because partial credit model is suitable for the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#construct the polysemy items</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#get question list</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>q_list <span class="ot">&lt;-</span> <span class="fu">str_extract</span>(<span class="fu">colnames</span>(data_poly), <span class="st">"(?&lt;=q)</span><span class="sc">\\</span><span class="st">d+(?=_)"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create a dataframe with columns as the number of questions</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>data_poly_q <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">nrow</span>(data_irt)))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (q <span class="cf">in</span> <span class="fu">unique</span>(q_list)){</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    data_poly_q[<span class="fu">paste0</span>(<span class="st">"q"</span>, q)] <span class="ot">&lt;-</span> data_poly <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="fu">grep</span>(<span class="fu">paste0</span>(<span class="st">"^q"</span>, q), <span class="fu">names</span>(data_poly))) <span class="sc">%&gt;%</span> <span class="fu">rowSums</span>()</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine dichotomous and polytomous data</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>data_joint <span class="ot">&lt;-</span> <span class="fu">cbind</span>(data_dict, data_poly_q)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify item types for each part</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>item_types <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"2PL"</span>, <span class="fu">ncol</span>(data_dict)), <span class="fu">rep</span>(<span class="st">"gpcm"</span>, <span class="fu">ncol</span>(data_poly_q)))</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># joint_fit &lt;- mirt(data_joint, model = 1, itemtype = item_types, optimizer = "nlminb")</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(joint_fit, paste("irt_full", 'joint', ".Rds", sep=""))</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>joint_fit <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Documents/Project/project-llm-writing/data/grammar/irt_fulljoint.Rds"</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>item_joint <span class="ot">&lt;-</span> <span class="fu">coef</span>(joint_fit, <span class="at">IRTpars =</span> <span class="cn">TRUE</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>items</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>item_joint[,<span class="st">'b'</span>] <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(item_joint[, <span class="fu">c</span>(<span class="st">'b'</span>, <span class="st">'b1'</span>, <span class="st">'b2'</span>, <span class="st">'b3'</span>, <span class="st">'b4'</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>item_joint_parames <span class="ot">&lt;-</span> item_joint[, <span class="fu">c</span>(<span class="st">'a'</span>, <span class="st">'b'</span>)] </span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="co"># write.csv(item_joint, "~/Documents/Project/project-aiwriting/data/irt_res_item_joint.csv")</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (q <span class="cf">in</span> <span class="fu">unique</span>(q_list)){</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    acc[<span class="fu">paste0</span>(<span class="st">"q"</span>, q), ] <span class="ot">&lt;-</span> acc[<span class="fu">grep</span>(<span class="fu">paste0</span>(<span class="st">"^q"</span>, q), <span class="fu">rownames</span>(acc)), ] <span class="sc">%&gt;%</span> <span class="fu">mean</span>()</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Join item parameters with accuracy by rownames of item_params</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">merge</span>(item_joint_parames, acc, <span class="at">by =</span> <span class="st">"row.names"</span>)</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="co"># write.csv(items, "~/Documents/Project/project-llm-writing/data/grammar/irt2_res_items.csv")</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot correlation between difficulty and accuracy</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(items, <span class="fu">aes</span>(<span class="at">x =</span> b, <span class="at">y =</span> accuracy)) <span class="sc">+</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Item Difficulty vs. Accuracy"</span>, <span class="at">x =</span> <span class="st">"Difficulty"</span>, <span class="at">y =</span> <span class="st">"Accuracy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(items<span class="sc">$</span>b, items<span class="sc">$</span>accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.5672927</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(items<span class="sc">$</span>b, items<span class="sc">$</span>accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  items$b and items$accuracy
+t = -4.5694, df = 44, p-value = 3.939e-05
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.7363291 -0.3316046
+sample estimates:
+       cor 
+-0.5672927 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(items<span class="sc">$</span>b[items<span class="sc">$</span>b<span class="sc">&gt;-</span><span class="dv">7</span> <span class="sc">&amp;</span> items<span class="sc">$</span>b<span class="sc">&lt;</span><span class="dv">10</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract ability estimates</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ability_estimates &lt;- fscores(joint_model)</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># print(ability_estimates)</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(joint_fit, <span class="at">type =</span> <span class="st">'trace'</span>, <span class="at">items =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the item estimations from the joint models and item’s accuracy, they were divided into two parts by hand pick.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#based on item parameters, hand pick the items</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>ver1_q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"q7"</span>,<span class="st">"q1"</span>,<span class="st">"q2"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q35_2"</span>,<span class="st">"q32_6"</span>,<span class="st">"q34_3"</span>,<span class="st">"q35_1"</span>,<span class="st">"q35_5"</span>,<span class="st">"q33_7"</span>,<span class="st">"q32_8"</span>,<span class="st">"q35_8"</span>,<span class="st">"q34_6"</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q12"</span>,<span class="st">"q21"</span>,<span class="st">"q23"</span>,<span class="st">"q30"</span>,<span class="st">"q31"</span>,<span class="st">"q19"</span>,<span class="st">"q20"</span>,<span class="st">"q11"</span>,<span class="st">"q27"</span>,<span class="st">"q15"</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>ver2_q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"q6"</span>, <span class="st">"q5"</span>, <span class="st">"q3"</span>, </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q34_4"</span>, <span class="st">"q34_8"</span>, <span class="st">"q34_2"</span>, <span class="st">"q35_7"</span>, <span class="st">"q33_4"</span>, <span class="st">"q33_6"</span>, <span class="st">"q35_4"</span>, <span class="st">"q32_5"</span>, <span class="st">"q34_1"</span>, </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q13"</span>, <span class="st">"q25"</span>, <span class="st">"q14"</span>, <span class="st">"q26"</span>, <span class="st">"q22"</span>, <span class="st">"q16"</span>, <span class="st">"q17"</span>, <span class="st">"q18"</span>, <span class="st">"q24"</span>, <span class="st">"q29"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="validation-the-parallel-tests" class="level3">
+<h3 class="anchored" data-anchor-id="validation-the-parallel-tests">Validation the parallel tests</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>data_a <span class="ot">&lt;-</span> data_joint[, ver1_q]</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>data_b <span class="ot">&lt;-</span> data_joint[, ver2_q]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>item_types_p <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"2PL"</span>, <span class="dv">12</span>), <span class="fu">rep</span>(<span class="st">"gpcm"</span>, <span class="dv">10</span>))</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>model_a <span class="ot">&lt;-</span> <span class="fu">mirt</span>(data_a, <span class="dv">1</span>, <span class="at">itemtype =</span> item_types_p, <span class="at">SE=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Iteration: 1, Log-Lik: -6398960.372, Max-Change: 2.07454
+Iteration: 2, Log-Lik: -5987287.298, Max-Change: 2.33951
+Iteration: 3, Log-Lik: -5848100.384, Max-Change: 0.38231
+Iteration: 4, Log-Lik: -5820207.214, Max-Change: 0.43068
+Iteration: 5, Log-Lik: -5811671.569, Max-Change: 0.24150
+Iteration: 6, Log-Lik: -5808887.906, Max-Change: 0.24055
+Iteration: 7, Log-Lik: -5807850.933, Max-Change: 0.17854
+Iteration: 8, Log-Lik: -5807404.965, Max-Change: 0.19655
+Iteration: 9, Log-Lik: -5807188.928, Max-Change: 0.16184
+Iteration: 10, Log-Lik: -5807052.108, Max-Change: 0.11591
+Iteration: 11, Log-Lik: -5806948.083, Max-Change: 0.10260
+Iteration: 12, Log-Lik: -5806870.937, Max-Change: 0.10750
+Iteration: 13, Log-Lik: -5806813.837, Max-Change: 0.20208
+Iteration: 14, Log-Lik: -5806759.559, Max-Change: 0.06883
+Iteration: 15, Log-Lik: -5806697.679, Max-Change: 0.10349
+Iteration: 16, Log-Lik: -5806663.939, Max-Change: 0.05963
+Iteration: 17, Log-Lik: -5806642.507, Max-Change: 0.13461
+Iteration: 18, Log-Lik: -5806620.077, Max-Change: 0.05715
+Iteration: 19, Log-Lik: -5806596.263, Max-Change: 0.06963
+Iteration: 20, Log-Lik: -5806578.662, Max-Change: 0.04262
+Iteration: 21, Log-Lik: -5806566.674, Max-Change: 0.06564
+Iteration: 22, Log-Lik: -5806555.061, Max-Change: 0.04246
+Iteration: 23, Log-Lik: -5806545.954, Max-Change: 0.04894
+Iteration: 24, Log-Lik: -5806539.526, Max-Change: 0.03747
+Iteration: 25, Log-Lik: -5806531.772, Max-Change: 0.04496
+Iteration: 26, Log-Lik: -5806525.069, Max-Change: 0.03608
+Iteration: 27, Log-Lik: -5806519.068, Max-Change: 0.02995
+Iteration: 28, Log-Lik: -5806513.280, Max-Change: 0.02919
+Iteration: 29, Log-Lik: -5806508.281, Max-Change: 0.04438
+Iteration: 30, Log-Lik: -5806503.474, Max-Change: 0.02759
+Iteration: 31, Log-Lik: -5806499.137, Max-Change: 0.02597
+Iteration: 32, Log-Lik: -5806495.127, Max-Change: 0.02532
+Iteration: 33, Log-Lik: -5806491.763, Max-Change: 0.02329
+Iteration: 34, Log-Lik: -5806488.765, Max-Change: 0.03065
+Iteration: 35, Log-Lik: -5806485.563, Max-Change: 0.02269
+Iteration: 36, Log-Lik: -5806482.832, Max-Change: 0.04726
+Iteration: 37, Log-Lik: -5806480.449, Max-Change: 0.02632
+Iteration: 38, Log-Lik: -5806474.898, Max-Change: 0.00022
+Iteration: 39, Log-Lik: -5806474.865, Max-Change: 0.00044
+Iteration: 40, Log-Lik: -5806474.832, Max-Change: 0.00022
+Iteration: 41, Log-Lik: -5806474.799, Max-Change: 0.00035
+Iteration: 42, Log-Lik: -5806474.781, Max-Change: 0.00017
+Iteration: 43, Log-Lik: -5806474.774, Max-Change: 0.00014
+Iteration: 44, Log-Lik: -5806474.758, Max-Change: 0.00024
+Iteration: 45, Log-Lik: -5806474.735, Max-Change: 0.00010
+Iteration: 46, Log-Lik: -5806474.732, Max-Change: 0.00042
+Iteration: 47, Log-Lik: -5806474.723, Max-Change: 0.00021
+Iteration: 48, Log-Lik: -5806474.698, Max-Change: 0.00034
+Iteration: 49, Log-Lik: -5806474.696, Max-Change: 0.00026
+Iteration: 50, Log-Lik: -5806474.657, Max-Change: 0.00009
+
+Calculating information matrix...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>ability_a <span class="ot">&lt;-</span> <span class="fu">fscores</span>(model_a)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>params_a <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_a, <span class="at">IRTpars =</span> <span class="cn">TRUE</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>items</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>params_a[,<span class="st">'b'</span>] <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(params_a[, <span class="fu">c</span>(<span class="st">'b'</span>, <span class="st">'b1'</span>, <span class="st">'b2'</span>, <span class="st">'b3'</span>, <span class="st">'b4'</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>model_b <span class="ot">&lt;-</span> <span class="fu">mirt</span>(data_b, <span class="dv">1</span>, <span class="at">itemtype =</span> item_types_p, <span class="at">SE=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Iteration: 1, Log-Lik: -6362804.029, Max-Change: 5.14692
+Iteration: 2, Log-Lik: -5986568.670, Max-Change: 1.12882
+Iteration: 3, Log-Lik: -5868784.712, Max-Change: 1.18852
+Iteration: 4, Log-Lik: -5842870.293, Max-Change: 0.94155
+Iteration: 5, Log-Lik: -5835217.489, Max-Change: 1.10718
+Iteration: 6, Log-Lik: -5831972.384, Max-Change: 0.63998
+Iteration: 7, Log-Lik: -5830351.941, Max-Change: 0.76382
+Iteration: 8, Log-Lik: -5829327.828, Max-Change: 0.32214
+Iteration: 9, Log-Lik: -5828803.221, Max-Change: 0.21274
+Iteration: 10, Log-Lik: -5828483.195, Max-Change: 0.14875
+Iteration: 11, Log-Lik: -5828288.494, Max-Change: 0.14127
+Iteration: 12, Log-Lik: -5828155.176, Max-Change: 0.12340
+Iteration: 13, Log-Lik: -5828054.358, Max-Change: 0.11819
+Iteration: 14, Log-Lik: -5827986.746, Max-Change: 0.10520
+Iteration: 15, Log-Lik: -5827930.701, Max-Change: 0.14016
+Iteration: 16, Log-Lik: -5827894.708, Max-Change: 0.06200
+Iteration: 17, Log-Lik: -5827863.400, Max-Change: 0.11738
+Iteration: 18, Log-Lik: -5827837.182, Max-Change: 0.04457
+Iteration: 19, Log-Lik: -5827816.690, Max-Change: 0.14973
+Iteration: 20, Log-Lik: -5827790.060, Max-Change: 0.03340
+Iteration: 21, Log-Lik: -5827772.701, Max-Change: 0.28074
+Iteration: 22, Log-Lik: -5827750.061, Max-Change: 0.03885
+Iteration: 23, Log-Lik: -5827723.307, Max-Change: 0.12319
+Iteration: 24, Log-Lik: -5827709.052, Max-Change: 0.02923
+Iteration: 25, Log-Lik: -5827700.446, Max-Change: 0.00139
+Iteration: 26, Log-Lik: -5827699.128, Max-Change: 0.00133
+Iteration: 27, Log-Lik: -5827698.380, Max-Change: 0.00065
+Iteration: 28, Log-Lik: -5827697.691, Max-Change: 0.00052
+Iteration: 29, Log-Lik: -5827697.471, Max-Change: 0.00028
+Iteration: 30, Log-Lik: -5827697.404, Max-Change: 0.00011
+Iteration: 31, Log-Lik: -5827697.358, Max-Change: 0.00036
+Iteration: 32, Log-Lik: -5827697.254, Max-Change: 0.00030
+Iteration: 33, Log-Lik: -5827697.188, Max-Change: 0.00027
+Iteration: 34, Log-Lik: -5827697.136, Max-Change: 0.00012
+Iteration: 35, Log-Lik: -5827697.117, Max-Change: 0.00024
+Iteration: 36, Log-Lik: -5827697.087, Max-Change: 0.00010
+
+Calculating information matrix...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ability_b <span class="ot">&lt;-</span> <span class="fu">fscores</span>(model_b)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>params_b <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_b, <span class="at">IRTpars =</span> <span class="cn">TRUE</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>items</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>params_b[,<span class="st">'b'</span>] <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(params_b[, <span class="fu">c</span>(<span class="st">'b'</span>, <span class="st">'b1'</span>, <span class="st">'b2'</span>, <span class="st">'b3'</span>, <span class="st">'b4'</span>)], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># cor(ability_a, ability_b)</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot() +</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point(aes(x = ability_a, y = ability_b)) +</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   labs(title = "Ability Estimates from Version A and Version B",</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="co">#        x = "Ability Estimates from Version A",</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="co">#        y = "Ability Estimates from Version B")</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ability_a<span class="sc">-</span>ability_b, <span class="at">main =</span> <span class="st">"Difference between the individual ability of version A and version B, IRT mdoels"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>acc_a <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(data_a)<span class="sc">/</span><span class="dv">44</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>acc_b <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(data_b)<span class="sc">/</span><span class="dv">44</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(acc_a<span class="sc">-</span>acc_b, <span class="at">main =</span> <span class="st">"Difference between the individual accuracy of version A and version B"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="grammar_judgement_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot() +</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point(aes(x = acc_a, y = acc_b)) +</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   labs(title = "Ability Estimates from Version A and Version B",</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co">#        x = "Ability Estimates from Version A",</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">#        y = "Ability Estimates from Version B")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>the correlation between participants abilities from version a and version b is 0.7531883. The correlation is significant, 0. The histogram of the difference between the ability estimates from version A and version B is shown above. The histogram of the difference between the individual’s accuracy from version A and version B is shown above. The differences between the ability estimates and the accuracy of version A and version B are symmetrically distributed around 0, indicating that the two versions are parallel.</p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

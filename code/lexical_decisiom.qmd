@@ -1,0 +1,175 @@
+---
+title: "Lexical Decision Task Creation"
+author: "Wei Li"
+date: "2024-10-01"
+format: html
+jupyter: python3
+---
+The notebook is to create parallel lexical decision task to test participants' vocabulary ability monthly, as part of AI-writing project. The task is to decide whether the presented word is a real word or not. We have one LexTale version as standard will be used as posttest, the remaining versions were developed based on the LexTale version. The words and nonwords are selected from English Lexicon Project and aligned with LexTale. The task is to create a list of words and nonwords for each month:
+ * [done] pretest version
+ * month1 version
+ * month2 version
+ * month3 version
+ * month4 version
+ * month5 version
+ * posttest version -- LexTale(https://www.lextale.com/takethetest.html)
+
+## get the words from English Lexicon Project
+```{python}
+import pandas as pd
+import numpy as np
+import os
+import openpyxl
+import warnings
+
+folder_path = '/Users/weili/Documents/Project/project-llm-writing/data/lex_dec'
+word = pd.read_csv(os.path.join(folder_path, 'word_bank.csv')) ##word list from lexicon project
+nonword = pd.read_csv(os.path.join(folder_path, 'nonword_bank.csv')) ##nonword list from lexicon project
+word_align = pd.read_csv(os.path.join(folder_path, 'extword_lextale.csv')) ##word counldn't been found in English Lexicon Project, but we can get the characteristics from the words in English Lexicon Project
+nonword_align = pd.read_csv(os.path.join(folder_path, 'nonword_lextale.csv'))
+##nonwords from lextale, which are not included in English Lexicon Project, but we can get the characteristics from the nonwords in English Lexicon Project
+```
+
+## align with LaxTale -- word
+```{python}
+## word list from laxtale
+words_list = [
+    'denial', 'generic', 'scornful', 'stoutly', 'ablaze', 'moonlit', 'lofty', 'hurricane', 'flaw', 'unkempt',
+    'breeding', 'festivity', 'screech', 'savory', 'shin', 'fluid', 'allied', 'slain', 'recipient', 'eloquence',
+    'cleanliness', 'dispatch', 'ingenious', 'bewitch', 'plaintively', 'hasty', 'lengthy', 'fray', 'upkeep',
+    'majestic', 'nourishment', 'turmoil', 'carbohydrate', 'scholar', 'turtle', 'cylinder', 'censorship',
+    'celestial', 'rascal', 'muddy', 'listless', 'wrought'
+]
+
+##columns
+col_algn = ['Log_Freq_HAL', 'Ortho_N', 'BG_Sum', 'NPhon', 'NMorph', 'I_Mean_RT', 'I_Zscore', 'I_Mean_Accuracy', 'Length', 'Word']
+
+## word not in the list
+word_extra = [w for w in words_list if w not in set(word['Word'])]
+
+## get the characteristics of the words in the list
+word_algn = word.loc[word['Word'].isin(words_list), col_algn]
+word_algn['BG_Sum'] = word_algn['BG_Sum'].str.replace(',', '').astype(float)
+word_algn.iloc[:, 0:9] = word_algn.iloc[:, 0:9].apply(pd.to_numeric, errors='coerce')
+
+word_all = word.loc[:, col_algn]
+word_all['BG_Sum'] = word_all['BG_Sum'].str.replace(',', '').replace('#', 'NaN').astype(float)
+word_all.iloc[:, 0:9] = word_all.iloc[:, 0:9].apply(pd.to_numeric, errors='coerce')
+```
+
+```{python}
+word_b = {}
+for idx in range(0, len(word_algn.iloc[:,1])):
+    tgr = word_algn.iloc[idx,:].Word
+    tgr_row = word_algn.iloc[idx,0:9]
+    tgr_acc = word_algn.iloc[idx,:].I_Mean_Accuracy
+    tgr_len = word_algn.iloc[idx,:].Length
+    df = word_all[(word_all['I_Mean_Accuracy'] >= tgr_acc - 0.01) & (word_all['I_Mean_Accuracy'] <= tgr_acc + 0.01)] ## find the words with similar accuracy
+    df = df[df['Length'] == tgr_len] ## find the words with the same length
+    df.loc[:,'diff'] = 999
+    for index, row in df.iterrows():
+        df.loc[index,'diff'] = (abs(row - tgr_row)/(abs(tgr_row)+0.001)).sum()
+    #sort df by diff
+    df = df.sort_values(by='diff')
+    df = df[0:20]
+    word_b[tgr] = df
+    df = df.iloc[0:0]
+```
+
+```{python}
+warnings.filterwarnings('ignore')
+
+extwords_list = ['cleanliness', 'plaintively']
+
+for idx in range(0, len(extwords_list)):
+    tgr = word_align.iloc[idx,:].Word
+    tgr_row = word_align.iloc[idx,1:]
+    tgr_len = word_align.iloc[idx,:].Length
+    df = word_all[word_all['Length'] == tgr_len]
+    df.loc[:,'diff'] = 999
+    for index, row in df.iterrows():
+        df.loc[index,'diff'] = (abs(row[1:] - tgr_row)/(abs(tgr_row)+0.001)).sum()
+    #sort df by diff
+    df = df.sort_values(by='diff')
+    diff = df.loc[:,'diff']
+    df = df[0:50]
+    df = word.iloc[df.index]
+    df.loc[:,'diff'] = diff
+    df.loc[:,'I_Mean_Accuracy_diff'] = abs(df.I_Mean_Accuracy - df.I_Mean_Accuracy.mean())
+    ## get the diff for the accurarcy compared to the mean
+    df = df.sort_values(by='I_Mean_Accuracy_diff')
+    word_b[tgr] = df
+    df = df.iloc[0:0]
+```
+
+```{python}
+##write the dictory to csv
+for key in word_b.keys():
+    word_b[key].to_csv(os.path.join(folder_path, 'version_b/word', key + '.csv'))
+
+##write as xlxs, one sheet for one word
+with pd.ExcelWriter(os.path.join(folder_path, 'version_b/word_b.xlsx'), engine='openpyxl') as writer:
+    for key in word_b.keys():
+        word_b[key].to_excel(writer, sheet_name=key)
+```
+
+All the words used in LexTale can be found in English Lexicon Project (except, 'cleanliness', 'plaintively', the two words will be matched in the way used to match nonwords), so we can get the characteristics of the words from English Lexicon Project. We find the words with similar accuracy and length from the English Lexicon Project, and select the top 20 words with the smallest difference in the characteristics. The words are saved in the dictionary word_b.
+
+## align with non words
+```{python}
+nonwords_list = [
+    'platery', 'mensible', 'kermshaw', 'alberation', 'plaudate', 'spaunch', 'exprate', 'rebondicate', 'skave',
+    'kilp', 'interfate', 'crumper', 'magrity', 'abergy', 'proom', 'fellick', 'destription', 'purrage', 'pulsh',
+    'quirty', 'pudour'
+]
+def replace_str(x):
+    return x.str.replace(',', '')
+## apply the str manipulation to the nonword_align columns
+nonword_align.loc[:, ['BG_Sum', 'BG_Freq_By_Pos']] = nonword_align.loc[:, ['BG_Sum', 'BG_Mean', 'BG_Freq_By_Pos']].apply(replace_str, axis=1)
+nonword_align.iloc[:,1:] = nonword_align.iloc[:,1:].apply(pd.to_numeric, errors='coerce')
+
+nonword_all = nonword
+nonword_all.loc[:, ['BG_Sum', 'BG_Mean', 'BG_Freq_By_Pos']] = nonword_all.loc[:, ['BG_Sum', 'BG_Mean', 'BG_Freq_By_Pos']].apply(replace_str, axis=1)
+nonword_all.iloc[:,1:] = nonword_all.iloc[:,1:].apply(pd.to_numeric, errors='coerce')
+```
+
+```{python}
+warnings.filterwarnings('ignore')
+
+## get the characteristics of the words in the list
+nonword_b = {}
+for idx in range(0, len(nonword_align.iloc[:,1])):
+    tgr = nonword_align.iloc[idx,:].Word
+    tgr_row = nonword_align.iloc[idx,1:]
+    tgr_len = nonword_align.iloc[idx,:].Length
+    df = nonword_all[nonword_all['Length'] == tgr_len]
+    df.loc[:,'diff'] = 999
+    for index, row in df.iterrows():
+        df.loc[index,'diff'] = (abs(row[1:] - tgr_row)/(abs(tgr_row)+0.001)).sum()
+    #sort df by diff
+    df = df.sort_values(by='diff')
+    diff = df.loc[:,'diff']
+    df = df[0:50]
+    df = nonword.iloc[df.index]
+    df.loc[:,'diff'] = diff
+    df.loc[:,'NWI_Mean_Accuracy_diff'] = abs(df.NWI_Mean_Accuracy - df.NWI_Mean_Accuracy.mean())
+    ## get the diff for the accurarcy compared to the mean
+    df = df.sort_values(by='NWI_Mean_Accuracy_diff')
+    nonword_b[tgr] = df
+    df = df.iloc[0:0]
+```
+
+```{python}
+##write the dictory to csv
+for key in nonword_b.keys():
+    nonword_b[key].to_csv(os.path.join(folder_path, 'version_b/nonword', key + '.csv'))
+
+##write as xlxs, one sheet for one word
+with pd.ExcelWriter(os.path.join(folder_path, 'version_b/nonword.xlsx'), engine='openpyxl') as writer:
+    for key in nonword_b.keys():
+        nonword_b[key].to_excel(writer, sheet_name=key)
+```
+
+None of the nonwords used in LexTale can be found in English Lexicon Project, but we can get the characteristics of the nonwords from English Lexicon Project. We find the nonwords with the same length from the English Lexicon Project, and select the top 50 nonwords with the smallest difference in the characteristics. The nonwords are saved in the dictionary nonword_b. Accuracy is the most important factor for the nonwords, so we also calculate the difference between the accuracy and the mean accuracy of the similar nonwords. The nonwords with the accuracy close to mean are selected.
+
+
