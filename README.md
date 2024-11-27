@@ -1,4 +1,5 @@
 # llm-writing
+Notebook: https://zany-tortoise-be2.notion.site/AI-and-Language-Learning-with-MS-987f8a8f11ac49b6bfb6fd2e3d2fdc72?pvs=4
 ## Overview
 The repo is for project to investigate how LLM pwoered writing tools affect English learners to learn English. The repo included the (1). English proficiency assements development; (2). Progress Report; (3). Data analysis. 
 
