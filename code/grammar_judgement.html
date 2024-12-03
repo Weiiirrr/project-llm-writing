@@ -307,10 +307,10 @@ sample estimates:
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#based on item parameters, hand pick the items</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>ver1_q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"q7"</span>,<span class="st">"q1"</span>,<span class="st">"q2"</span>,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q35_2"</span>,<span class="st">"q32_6"</span>,<span class="st">"q34_3"</span>,<span class="st">"q35_1"</span>,<span class="st">"q35_5"</span>,<span class="st">"q33_7"</span>,<span class="st">"q32_8"</span>,<span class="st">"q35_8"</span>,<span class="st">"q34_6"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q35_2"</span>,<span class="st">"q32_6"</span>,<span class="st">"q34_3"</span>,<span class="st">"q35_1"</span>,<span class="st">"q35_5"</span>,<span class="st">"q33_6"</span>,<span class="st">"q32_8"</span>,<span class="st">"q35_8"</span>,<span class="st">"q34_6"</span>,</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q12"</span>,<span class="st">"q21"</span>,<span class="st">"q23"</span>,<span class="st">"q30"</span>,<span class="st">"q31"</span>,<span class="st">"q19"</span>,<span class="st">"q20"</span>,<span class="st">"q11"</span>,<span class="st">"q27"</span>,<span class="st">"q15"</span>)</span>
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>ver2_q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"q6"</span>, <span class="st">"q5"</span>, <span class="st">"q3"</span>, </span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q34_4"</span>, <span class="st">"q34_8"</span>, <span class="st">"q34_2"</span>, <span class="st">"q35_7"</span>, <span class="st">"q33_4"</span>, <span class="st">"q33_6"</span>, <span class="st">"q35_4"</span>, <span class="st">"q32_5"</span>, <span class="st">"q34_1"</span>, </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q34_4"</span>, <span class="st">"q34_8"</span>, <span class="st">"q34_2"</span>, <span class="st">"q35_7"</span>, <span class="st">"q33_4"</span>, <span class="st">"q33_7"</span>, <span class="st">"q35_4"</span>, <span class="st">"q32_5"</span>, <span class="st">"q34_1"</span>, </span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"q13"</span>, <span class="st">"q25"</span>, <span class="st">"q14"</span>, <span class="st">"q26"</span>, <span class="st">"q22"</span>, <span class="st">"q16"</span>, <span class="st">"q17"</span>, <span class="st">"q18"</span>, <span class="st">"q24"</span>, <span class="st">"q29"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="validation-the-parallel-tests" class="level3">
@@ -324,56 +324,60 @@ sample estimates:
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>model_a <span class="ot">&lt;-</span> <span class="fu">mirt</span>(data_a, <span class="dv">1</span>, <span class="at">itemtype =</span> item_types_p, <span class="at">SE=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Iteration: 1, Log-Lik: -6398960.372, Max-Change: 2.07454
-Iteration: 2, Log-Lik: -5987287.298, Max-Change: 2.33951
-Iteration: 3, Log-Lik: -5848100.384, Max-Change: 0.38231
-Iteration: 4, Log-Lik: -5820207.214, Max-Change: 0.43068
-Iteration: 5, Log-Lik: -5811671.569, Max-Change: 0.24150
-Iteration: 6, Log-Lik: -5808887.906, Max-Change: 0.24055
-Iteration: 7, Log-Lik: -5807850.933, Max-Change: 0.17854
-Iteration: 8, Log-Lik: -5807404.965, Max-Change: 0.19655
-Iteration: 9, Log-Lik: -5807188.928, Max-Change: 0.16184
-Iteration: 10, Log-Lik: -5807052.108, Max-Change: 0.11591
-Iteration: 11, Log-Lik: -5806948.083, Max-Change: 0.10260
-Iteration: 12, Log-Lik: -5806870.937, Max-Change: 0.10750
-Iteration: 13, Log-Lik: -5806813.837, Max-Change: 0.20208
-Iteration: 14, Log-Lik: -5806759.559, Max-Change: 0.06883
-Iteration: 15, Log-Lik: -5806697.679, Max-Change: 0.10349
-Iteration: 16, Log-Lik: -5806663.939, Max-Change: 0.05963
-Iteration: 17, Log-Lik: -5806642.507, Max-Change: 0.13461
-Iteration: 18, Log-Lik: -5806620.077, Max-Change: 0.05715
-Iteration: 19, Log-Lik: -5806596.263, Max-Change: 0.06963
-Iteration: 20, Log-Lik: -5806578.662, Max-Change: 0.04262
-Iteration: 21, Log-Lik: -5806566.674, Max-Change: 0.06564
-Iteration: 22, Log-Lik: -5806555.061, Max-Change: 0.04246
-Iteration: 23, Log-Lik: -5806545.954, Max-Change: 0.04894
-Iteration: 24, Log-Lik: -5806539.526, Max-Change: 0.03747
-Iteration: 25, Log-Lik: -5806531.772, Max-Change: 0.04496
-Iteration: 26, Log-Lik: -5806525.069, Max-Change: 0.03608
-Iteration: 27, Log-Lik: -5806519.068, Max-Change: 0.02995
-Iteration: 28, Log-Lik: -5806513.280, Max-Change: 0.02919
-Iteration: 29, Log-Lik: -5806508.281, Max-Change: 0.04438
-Iteration: 30, Log-Lik: -5806503.474, Max-Change: 0.02759
-Iteration: 31, Log-Lik: -5806499.137, Max-Change: 0.02597
-Iteration: 32, Log-Lik: -5806495.127, Max-Change: 0.02532
-Iteration: 33, Log-Lik: -5806491.763, Max-Change: 0.02329
-Iteration: 34, Log-Lik: -5806488.765, Max-Change: 0.03065
-Iteration: 35, Log-Lik: -5806485.563, Max-Change: 0.02269
-Iteration: 36, Log-Lik: -5806482.832, Max-Change: 0.04726
-Iteration: 37, Log-Lik: -5806480.449, Max-Change: 0.02632
-Iteration: 38, Log-Lik: -5806474.898, Max-Change: 0.00022
-Iteration: 39, Log-Lik: -5806474.865, Max-Change: 0.00044
-Iteration: 40, Log-Lik: -5806474.832, Max-Change: 0.00022
-Iteration: 41, Log-Lik: -5806474.799, Max-Change: 0.00035
-Iteration: 42, Log-Lik: -5806474.781, Max-Change: 0.00017
-Iteration: 43, Log-Lik: -5806474.774, Max-Change: 0.00014
-Iteration: 44, Log-Lik: -5806474.758, Max-Change: 0.00024
-Iteration: 45, Log-Lik: -5806474.735, Max-Change: 0.00010
-Iteration: 46, Log-Lik: -5806474.732, Max-Change: 0.00042
-Iteration: 47, Log-Lik: -5806474.723, Max-Change: 0.00021
-Iteration: 48, Log-Lik: -5806474.698, Max-Change: 0.00034
-Iteration: 49, Log-Lik: -5806474.696, Max-Change: 0.00026
-Iteration: 50, Log-Lik: -5806474.657, Max-Change: 0.00009
+Iteration: 1, Log-Lik: -6333784.681, Max-Change: 2.29930
+Iteration: 2, Log-Lik: -5914881.855, Max-Change: 2.73470
+Iteration: 3, Log-Lik: -5777840.938, Max-Change: 0.31704
+Iteration: 4, Log-Lik: -5749574.071, Max-Change: 0.45723
+Iteration: 5, Log-Lik: -5740633.203, Max-Change: 0.36169
+Iteration: 6, Log-Lik: -5737920.996, Max-Change: 0.21058
+Iteration: 7, Log-Lik: -5736810.392, Max-Change: 0.20605
+Iteration: 8, Log-Lik: -5736347.516, Max-Change: 0.16076
+Iteration: 9, Log-Lik: -5736146.181, Max-Change: 0.13913
+Iteration: 10, Log-Lik: -5736013.411, Max-Change: 0.22459
+Iteration: 11, Log-Lik: -5735926.166, Max-Change: 0.09105
+Iteration: 12, Log-Lik: -5735858.550, Max-Change: 0.12316
+Iteration: 13, Log-Lik: -5735807.895, Max-Change: 0.09909
+Iteration: 14, Log-Lik: -5735762.932, Max-Change: 0.10679
+Iteration: 15, Log-Lik: -5735731.996, Max-Change: 0.07241
+Iteration: 16, Log-Lik: -5735707.517, Max-Change: 0.12285
+Iteration: 17, Log-Lik: -5735689.614, Max-Change: 0.05511
+Iteration: 18, Log-Lik: -5735664.748, Max-Change: 0.07757
+Iteration: 19, Log-Lik: -5735647.266, Max-Change: 0.04738
+Iteration: 20, Log-Lik: -5735634.055, Max-Change: 0.05663
+Iteration: 21, Log-Lik: -5735620.757, Max-Change: 0.04168
+Iteration: 22, Log-Lik: -5735610.280, Max-Change: 0.04835
+Iteration: 23, Log-Lik: -5735600.547, Max-Change: 0.03575
+Iteration: 24, Log-Lik: -5735592.196, Max-Change: 0.04322
+Iteration: 25, Log-Lik: -5735584.050, Max-Change: 0.03234
+Iteration: 26, Log-Lik: -5735576.990, Max-Change: 0.03980
+Iteration: 27, Log-Lik: -5735569.773, Max-Change: 0.03498
+Iteration: 28, Log-Lik: -5735563.775, Max-Change: 0.02837
+Iteration: 29, Log-Lik: -5735558.538, Max-Change: 0.03333
+Iteration: 30, Log-Lik: -5735553.700, Max-Change: 0.02639
+Iteration: 31, Log-Lik: -5735549.210, Max-Change: 0.03080
+Iteration: 32, Log-Lik: -5735544.908, Max-Change: 0.02634
+Iteration: 33, Log-Lik: -5735541.051, Max-Change: 0.02950
+Iteration: 34, Log-Lik: -5735537.263, Max-Change: 0.02121
+Iteration: 35, Log-Lik: -5735533.784, Max-Change: 0.03148
+Iteration: 36, Log-Lik: -5735530.319, Max-Change: 0.02022
+Iteration: 37, Log-Lik: -5735527.585, Max-Change: 0.00422
+Iteration: 38, Log-Lik: -5735526.873, Max-Change: 0.00049
+Iteration: 39, Log-Lik: -5735526.716, Max-Change: 0.00015
+Iteration: 40, Log-Lik: -5735526.714, Max-Change: 0.00014
+Iteration: 41, Log-Lik: -5735526.700, Max-Change: 0.00030
+Iteration: 42, Log-Lik: -5735526.671, Max-Change: 0.00046
+Iteration: 43, Log-Lik: -5735526.656, Max-Change: 0.00018
+Iteration: 44, Log-Lik: -5735526.637, Max-Change: 0.00032
+Iteration: 45, Log-Lik: -5735526.616, Max-Change: 0.00014
+Iteration: 46, Log-Lik: -5735526.611, Max-Change: 0.00011
+Iteration: 47, Log-Lik: -5735526.600, Max-Change: 0.00022
+Iteration: 48, Log-Lik: -5735526.576, Max-Change: 0.00045
+Iteration: 49, Log-Lik: -5735526.565, Max-Change: 0.00020
+Iteration: 50, Log-Lik: -5735526.542, Max-Change: 0.00035
+Iteration: 51, Log-Lik: -5735526.524, Max-Change: 0.00016
+Iteration: 52, Log-Lik: -5735526.519, Max-Change: 0.00013
+Iteration: 53, Log-Lik: -5735526.506, Max-Change: 0.00023
+Iteration: 54, Log-Lik: -5735526.483, Max-Change: 0.00010
 
 Calculating information matrix...</code></pre>
 </div>
@@ -384,42 +388,70 @@ Calculating information matrix...</code></pre>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>model_b <span class="ot">&lt;-</span> <span class="fu">mirt</span>(data_b, <span class="dv">1</span>, <span class="at">itemtype =</span> item_types_p, <span class="at">SE=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Iteration: 1, Log-Lik: -6362804.029, Max-Change: 5.14692
-Iteration: 2, Log-Lik: -5986568.670, Max-Change: 1.12882
-Iteration: 3, Log-Lik: -5868784.712, Max-Change: 1.18852
-Iteration: 4, Log-Lik: -5842870.293, Max-Change: 0.94155
-Iteration: 5, Log-Lik: -5835217.489, Max-Change: 1.10718
-Iteration: 6, Log-Lik: -5831972.384, Max-Change: 0.63998
-Iteration: 7, Log-Lik: -5830351.941, Max-Change: 0.76382
-Iteration: 8, Log-Lik: -5829327.828, Max-Change: 0.32214
-Iteration: 9, Log-Lik: -5828803.221, Max-Change: 0.21274
-Iteration: 10, Log-Lik: -5828483.195, Max-Change: 0.14875
-Iteration: 11, Log-Lik: -5828288.494, Max-Change: 0.14127
-Iteration: 12, Log-Lik: -5828155.176, Max-Change: 0.12340
-Iteration: 13, Log-Lik: -5828054.358, Max-Change: 0.11819
-Iteration: 14, Log-Lik: -5827986.746, Max-Change: 0.10520
-Iteration: 15, Log-Lik: -5827930.701, Max-Change: 0.14016
-Iteration: 16, Log-Lik: -5827894.708, Max-Change: 0.06200
-Iteration: 17, Log-Lik: -5827863.400, Max-Change: 0.11738
-Iteration: 18, Log-Lik: -5827837.182, Max-Change: 0.04457
-Iteration: 19, Log-Lik: -5827816.690, Max-Change: 0.14973
-Iteration: 20, Log-Lik: -5827790.060, Max-Change: 0.03340
-Iteration: 21, Log-Lik: -5827772.701, Max-Change: 0.28074
-Iteration: 22, Log-Lik: -5827750.061, Max-Change: 0.03885
-Iteration: 23, Log-Lik: -5827723.307, Max-Change: 0.12319
-Iteration: 24, Log-Lik: -5827709.052, Max-Change: 0.02923
-Iteration: 25, Log-Lik: -5827700.446, Max-Change: 0.00139
-Iteration: 26, Log-Lik: -5827699.128, Max-Change: 0.00133
-Iteration: 27, Log-Lik: -5827698.380, Max-Change: 0.00065
-Iteration: 28, Log-Lik: -5827697.691, Max-Change: 0.00052
-Iteration: 29, Log-Lik: -5827697.471, Max-Change: 0.00028
-Iteration: 30, Log-Lik: -5827697.404, Max-Change: 0.00011
-Iteration: 31, Log-Lik: -5827697.358, Max-Change: 0.00036
-Iteration: 32, Log-Lik: -5827697.254, Max-Change: 0.00030
-Iteration: 33, Log-Lik: -5827697.188, Max-Change: 0.00027
-Iteration: 34, Log-Lik: -5827697.136, Max-Change: 0.00012
-Iteration: 35, Log-Lik: -5827697.117, Max-Change: 0.00024
-Iteration: 36, Log-Lik: -5827697.087, Max-Change: 0.00010
+Iteration: 1, Log-Lik: -6434390.016, Max-Change: 6.72942
+Iteration: 2, Log-Lik: -6060479.421, Max-Change: 2.29627
+Iteration: 3, Log-Lik: -5954165.366, Max-Change: 1.11347
+Iteration: 4, Log-Lik: -5928328.802, Max-Change: 0.75412
+Iteration: 5, Log-Lik: -5917509.017, Max-Change: 1.26792
+Iteration: 6, Log-Lik: -5913470.267, Max-Change: 1.07767
+Iteration: 7, Log-Lik: -5910793.930, Max-Change: 0.85294
+Iteration: 8, Log-Lik: -5909375.711, Max-Change: 0.88615
+Iteration: 9, Log-Lik: -5908189.643, Max-Change: 0.60593
+Iteration: 10, Log-Lik: -5907558.526, Max-Change: 0.34574
+Iteration: 11, Log-Lik: -5907254.645, Max-Change: 0.16599
+Iteration: 12, Log-Lik: -5907132.936, Max-Change: 0.13938
+Iteration: 13, Log-Lik: -5907038.526, Max-Change: 0.11470
+Iteration: 14, Log-Lik: -5906976.053, Max-Change: 0.08632
+Iteration: 15, Log-Lik: -5906933.088, Max-Change: 0.09225
+Iteration: 16, Log-Lik: -5906901.374, Max-Change: 0.06738
+Iteration: 17, Log-Lik: -5906875.141, Max-Change: 0.10317
+Iteration: 18, Log-Lik: -5906856.864, Max-Change: 0.04218
+Iteration: 19, Log-Lik: -5906841.462, Max-Change: 0.06920
+Iteration: 20, Log-Lik: -5906827.590, Max-Change: 0.04099
+Iteration: 21, Log-Lik: -5906817.248, Max-Change: 0.05953
+Iteration: 22, Log-Lik: -5906808.106, Max-Change: 0.04866
+Iteration: 23, Log-Lik: -5906801.283, Max-Change: 0.04629
+Iteration: 24, Log-Lik: -5906794.246, Max-Change: 0.05587
+Iteration: 25, Log-Lik: -5906786.567, Max-Change: 0.03685
+Iteration: 26, Log-Lik: -5906780.760, Max-Change: 0.00203
+Iteration: 27, Log-Lik: -5906778.817, Max-Change: 0.08231
+Iteration: 28, Log-Lik: -5906772.770, Max-Change: 0.02858
+Iteration: 29, Log-Lik: -5906767.637, Max-Change: 0.00292
+Iteration: 30, Log-Lik: -5906765.495, Max-Change: 0.00076
+Iteration: 31, Log-Lik: -5906765.382, Max-Change: 0.00058
+Iteration: 32, Log-Lik: -5906765.128, Max-Change: 0.00034
+Iteration: 33, Log-Lik: -5906765.045, Max-Change: 0.00014
+Iteration: 34, Log-Lik: -5906764.990, Max-Change: 0.00042
+Iteration: 35, Log-Lik: -5906764.865, Max-Change: 0.00033
+Iteration: 36, Log-Lik: -5906764.788, Max-Change: 0.00039
+Iteration: 37, Log-Lik: -5906764.729, Max-Change: 0.00017
+Iteration: 38, Log-Lik: -5906764.705, Max-Change: 0.00031
+Iteration: 39, Log-Lik: -5906764.669, Max-Change: 0.00013
+Iteration: 40, Log-Lik: -5906764.665, Max-Change: 0.00011
+Iteration: 41, Log-Lik: -5906764.651, Max-Change: 0.00032
+Iteration: 42, Log-Lik: -5906764.617, Max-Change: 0.00042
+Iteration: 43, Log-Lik: -5906764.597, Max-Change: 0.00019
+Iteration: 44, Log-Lik: -5906764.574, Max-Change: 0.00038
+Iteration: 45, Log-Lik: -5906764.551, Max-Change: 0.00015
+Iteration: 46, Log-Lik: -5906764.546, Max-Change: 0.00012
+Iteration: 47, Log-Lik: -5906764.533, Max-Change: 0.00030
+Iteration: 48, Log-Lik: -5906764.506, Max-Change: 0.00048
+Iteration: 49, Log-Lik: -5906764.493, Max-Change: 0.00020
+Iteration: 50, Log-Lik: -5906764.470, Max-Change: 0.00038
+Iteration: 51, Log-Lik: -5906764.451, Max-Change: 0.00016
+Iteration: 52, Log-Lik: -5906764.446, Max-Change: 0.00013
+Iteration: 53, Log-Lik: -5906764.433, Max-Change: 0.00032
+Iteration: 54, Log-Lik: -5906764.409, Max-Change: 0.00010
+Iteration: 55, Log-Lik: -5906764.406, Max-Change: 0.00041
+Iteration: 56, Log-Lik: -5906764.392, Max-Change: 0.00019
+Iteration: 57, Log-Lik: -5906764.372, Max-Change: 0.00037
+Iteration: 58, Log-Lik: -5906764.359, Max-Change: 0.00024
+Iteration: 59, Log-Lik: -5906764.330, Max-Change: 0.00041
+Iteration: 60, Log-Lik: -5906764.317, Max-Change: 0.00019
+Iteration: 61, Log-Lik: -5906764.309, Max-Change: 0.00015
+Iteration: 62, Log-Lik: -5906764.295, Max-Change: 0.00034
+Iteration: 63, Log-Lik: -5906764.274, Max-Change: 0.00012
+Iteration: 64, Log-Lik: -5906764.270, Max-Change: 0.00009
 
 Calculating information matrix...</code></pre>
 </div>
@@ -460,7 +492,7 @@ Calculating information matrix...</code></pre>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co">#        x = "Ability Estimates from Version A",</span></span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">#        y = "Ability Estimates from Version B")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>the correlation between participants abilities from version a and version b is 0.7531883. The correlation is significant, 0. The histogram of the difference between the ability estimates from version A and version B is shown above. The histogram of the difference between the individual’s accuracy from version A and version B is shown above. The differences between the ability estimates and the accuracy of version A and version B are symmetrically distributed around 0, indicating that the two versions are parallel.</p>
+<p>the correlation between participants abilities from version a and version b is 0.7635941. The correlation is significant, 0. The histogram of the difference between the ability estimates from version A and version B is shown above. The histogram of the difference between the individual’s accuracy from version A and version B is shown above. The differences between the ability estimates and the accuracy of version A and version B are symmetrically distributed around 0, indicating that the two versions are parallel.</p>
 </section>
 </section>
 </section>
